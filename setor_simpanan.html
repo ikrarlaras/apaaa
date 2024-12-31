@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setor Simpanan - SIMPINGO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            background: linear-gradient(135deg, #004d40, #80cbc4);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 85%;
+            max-width: 600px;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+            position: relative;
+            margin: 0 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #004d40;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        input {
+            padding: 12px;
+            font-size: 1.2rem;
+            width: 80%;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+        }
+
+        input:focus {
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2), 0 0 5px #00796b;
+            outline: none;
+        }
+
+        button {
+            padding: 15px 30px;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            width: 80%;
+        }
+
+        button:hover {
+            background-color: #004d40;
+            transform: scale(1.05);
+        }
+
+        footer {
+            position: absolute;
+            bottom: 20px;
+            text-align: center;
+            width: 100%;
+            color: white;
+            font-size: 0.9rem;
+            animation: fadeIn 2.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .balance {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #004d40;
+            margin-top: 20px;
+        }
+
+        .balance span {
+            color: #00796b;
+        }
+
+        .error {
+            color: red;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        .icon {
+            font-size: 4rem;
+            color: #00796b;
+            margin-bottom: 20px;
+            animation: bounce 1.5s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="icon">&#128176;</div>
+    <h1>Setor Simpanan</h1>
+    <p>Masukkan jumlah yang ingin Anda setor:</p>
+
+    <input type="number" id="jumlahSetor" placeholder="Jumlah Setoran" min="1" required>
+    <button onclick="confirmSetorSimpanan()">Setor</button>
+
+    <!-- Error message -->
+    <div id="error-message" class="error"></div>
+
+    <div class="balance">
+        <p>Saldo Anda: <strong id="saldo">Rp 0</strong></p>
+    </div>
+</div>
+
+
+<script>
+    // Fungsi untuk memperbarui saldo yang ditampilkan
+    function updateSaldo() {
+        let saldo = parseInt(localStorage.getItem('saldo')) || 0;
+        document.getElementById('saldo').textContent = 'Rp ' + saldo.toLocaleString('id-ID');
+    }
+
+    // Panggil fungsi untuk memperbarui saldo saat halaman dimuat
+    updateSaldo();
+
+    function confirmSetorSimpanan() {
+        const jumlahSetor = parseInt(document.getElementById('jumlahSetor').value);
+        const errorMessage = document.getElementById('error-message');
+
+        // Validasi input
+        if (isNaN(jumlahSetor) || jumlahSetor <= 0) {
+            errorMessage.textContent = "Masukkan jumlah yang valid (lebih dari Rp 0).";
+            return;
+        } else {
+            errorMessage.textContent = ""; // Hapus pesan error jika input valid
+        }
+
+        // Konfirmasi sebelum melanjutkan
+        const confirmation = confirm(`Anda yakin ingin menyetor Rp ${jumlahSetor.toLocaleString('id-ID')}?`);
+        if (confirmation) {
+            setorSimpanan(jumlahSetor);
+        }
+    }
+
+    function setorSimpanan(jumlahSetor) {
+        // Ambil saldo dari localStorage
+        let saldo = parseInt(localStorage.getItem('saldo')) || 0;
+
+        // Tambahkan saldo
+        saldo += jumlahSetor;
+
+        // Simpan saldo yang sudah diperbarui ke localStorage
+        localStorage.setItem('saldo', saldo);
+
+        // Simpan transaksi setor ke riwayat transaksi
+        let transactionHistory = JSON.parse(localStorage.getItem('transactionHistory')) || [];
+        const transaction = {
+            date: new Date().toLocaleDateString(),
+            description: 'Setor Simpanan',
+            amount: jumlahSetor,
+            type: 'Setor'
+        };
+        transactionHistory.push(transaction);
+        localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
+
+        // Update saldo yang ditampilkan
+        updateSaldo();
+
+        // Kembali ke halaman Simpanan
+        alert("Setoran berhasil!");
+        window.location.href = 'simpanan.html'; // Redirect ke halaman simpanan
+    }
+</script>
+
+</body>
+</html>

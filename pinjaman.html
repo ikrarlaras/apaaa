@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pinjaman - SIMPINGO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #004d40, #80cbc4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+            animation: bgPulse 5s infinite alternate;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            animation: slideIn 1s ease-out;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #004d40;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        input, select {
+            padding: 15px;
+            font-size: 1rem;
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #00796b;
+            box-shadow: 0 0 5px rgba(0, 121, 107, 0.5);
+        }
+
+        button {
+            padding: 15px 25px;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #004d40;
+            transform: scale(1.05);
+        }
+
+        .loan-info, .loan-status, .installment-schedule {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: #00796b;
+            background: #e0f2f1;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .loan-info.active, .loan-status.active, .installment-schedule.active {
+            display: block;
+        }
+
+        footer {
+            margin-top: 20px;
+            color: #333;
+            font-size: 0.8rem;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes bgPulse {
+            from {
+                background: linear-gradient(135deg, #004d40, #80cbc4);
+            }
+            to {
+                background: linear-gradient(135deg, #00796b, #004d40);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .icon {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: #00796b;
+            font-size: 1.2rem;
+        }
+
+        .input-group input {
+            padding-left: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1><i class="fas fa-hand-holding-usd"></i> Ajukan Pinjaman</h1>
+    <p>Masukkan jumlah pinjaman, tenor, dan lihat perhitungan cicilan bulanan.</p>
+
+    <div class="input-group">
+        <input type="text" id="loan-amount" placeholder="Jumlah Pinjaman (Rp)" oninput="validateNumber(this)" />
+    </div>
+
+    <div class="input-group">
+        <select id="loan-tenor">
+            <option value="6">6 Bulan</option>
+            <option value="12">12 Bulan</option>
+            <option value="24">24 Bulan</option>
+        </select>
+    </div>
+
+    <button onclick="calculateLoan()">Hitung Cicilan</button>
+
+    <div class="loan-info" id="loan-info"></div>
+
+    <button onclick="ajukanPinjaman()">Ajukan Pinjaman</button>
+
+    <div class="loan-status" id="loan-status"></div>
+    <div class="installment-schedule" id="installment-schedule"></div>
+
+
+</div>
+
+<script>
+    let saldo = parseInt(localStorage.getItem('saldo')) || 0;
+    let transactionHistory = JSON.parse(localStorage.getItem('transactionHistory')) || [];
+    let loanAmount, loanTenor, loanInterestRate = 0.05; // 5% interest rate
+
+    function formatRupiah(amount) {
+        return "Rp " + amount.toLocaleString('id-ID');
+    }
+
+    function validateNumber(input) {
+        let value = input.value;
+        value = value.replace(/[^0-9\.]/g, '');
+        input.value = value;
+    }
+
+    function calculateLoan() {
+        loanAmount = parseFloat(document.getElementById('loan-amount').value.replace(/[^0-9\.]/g, ''));
+        loanTenor = parseInt(document.getElementById('loan-tenor').value);
+
+        if (isNaN(loanAmount) || loanAmount <= 0) {
+            alert("Masukkan jumlah pinjaman yang valid!");
+            return;
+        }
+
+        let monthlyInterest = loanInterestRate / 12;
+        let monthlyPayment = loanAmount * (monthlyInterest * Math.pow(1 + monthlyInterest, loanTenor)) / (Math.pow(1 + monthlyInterest, loanTenor) - 1);
+        let totalPayment = monthlyPayment * loanTenor;
+
+        const info = document.getElementById('loan-info');
+        info.innerHTML = `Cicilan Bulanan: ${formatRupiah(monthlyPayment.toFixed(2))}<br>Total Pembayaran: ${formatRupiah(totalPayment.toFixed(2))}<br>Tenor: ${loanTenor} Bulan`;
+        info.classList.add('active');
+    }
+
+    function generateLoanID() {
+        return 'LN-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+    }
+
+    function ajukanPinjaman() {
+        if (isNaN(loanAmount) || loanAmount <= 0) {
+            alert("Masukkan jumlah pinjaman yang valid!");
+            return;
+        }
+
+        saldo += loanAmount;
+
+        const loanID = generateLoanID();
+        const dueDate = new Date();
+        dueDate.setMonth(dueDate.getMonth() + loanTenor);
+
+        const transaction = {
+            id: loanID,
+            date: new Date().toLocaleDateString(),
+            description: `Pinjaman Diterima`,
+            amount: loanAmount,
+            type: 'Pinjaman',
+            dueDate: dueDate.toISOString(),
+            status: 'Dalam Proses'
+        };
+        transactionHistory.push(transaction);
+
+        localStorage.setItem('saldo', saldo);
+        localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
+
+        alert(`Pinjaman berhasil diajukan! ID Pinjaman Anda: ${loanID}`);
+        showLoanStatus();
+        showInstallmentSchedule();
+    }
+
+    function showLoanStatus() {
+        const latestLoan = transactionHistory.filter(tx => tx.type === 'Pinjaman').pop();
+
+        if (latestLoan) {
+            const statusDiv = document.getElementById('loan-status');
+            statusDiv.innerHTML = `Status Pinjaman: ${latestLoan.status}<br>ID Pinjaman: ${latestLoan.id}`;
+            statusDiv.classList.add('active');
+        }
+    }
+
+    function showInstallmentSchedule() {
+        const latestLoan = transactionHistory.filter(tx => tx.type === 'Pinjaman').pop();
+
+        if (latestLoan) {
+            const scheduleDiv = document.getElementById('installment-schedule');
+            let scheduleHTML = `<strong>Jadwal Angsuran:</strong><br>`;
+
+            const monthlyInterest = loanInterestRate / 12;
+            const monthlyPayment = latestLoan.amount * (monthlyInterest * Math.pow(1 + monthlyInterest, loanTenor)) / (Math.pow(1 + monthlyInterest, loanTenor) - 1);
+
+            for (let i = 1; i <= loanTenor; i++) {
+                const paymentDate = new Date();
+                paymentDate.setMonth(paymentDate.getMonth() + i);
+                scheduleHTML += `Angsuran ${i}: ${formatRupiah(monthlyPayment.toFixed(2))} - Jatuh Tempo: ${paymentDate.toLocaleDateString()}<br>`;
+            }
+
+            scheduleDiv.innerHTML = scheduleHTML;
+            scheduleDiv.classList.add('active');
+        }
+    }
+</script>
+
+</body>
+</html>

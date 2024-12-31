@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarik Simpanan - SIMPINGO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            background: linear-gradient(135deg, #004d40, #80cbc4);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            animation: slideIn 1s ease-out;
+            position: relative;
+        }
+
+        .icon {
+            font-size: 4rem;
+            color: #00796b;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #004d40;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 1.2rem;
+            width: 80%;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            transition: box-shadow 0.3s;
+        }
+
+        input:focus {
+            box-shadow: 0 0 10px #00796b;
+            outline: none;
+        }
+
+        button {
+            padding: 15px 30px;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            width: 80%;
+        }
+
+        button:hover {
+            background-color: #004d40;
+            transform: scale(1.05);
+        }
+
+        .progress-bar {
+            width: 80%;
+            background: #ddd;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 20px auto;
+        }
+
+        .progress {
+            height: 20px;
+            background: #00796b;
+            width: 100%;
+            transition: width 0.5s;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00796b;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        .balance {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #004d40;
+            margin-top: 20px;
+        }
+
+        .balance span {
+            color: #00796b;
+        }
+
+        .error {
+            color: red;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="icon">&#128176;</div>
+    <h1>Tarik Simpanan</h1>
+    <p>Masukkan jumlah yang ingin Anda tarik:</p>
+
+    <input type="number" id="jumlahTarik" placeholder="Jumlah Tarikan" min="1" required>
+    <button onclick="tarikSimpanan()">Tarik</button>
+
+    <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- Error message -->
+    <div id="error-message" class="error"></div>
+
+    <div class="balance">
+        <p>Saldo Anda: <strong id="saldo">Rp 0</strong></p>
+    </div>
+</div>
+
+<div class="notification" id="notification"></div>
+
+<script>
+    function updateSaldo() {
+        let saldo = parseInt(localStorage.getItem('saldo')) || 0;
+        document.getElementById('saldo').textContent = 'Rp ' + saldo.toLocaleString('id-ID');
+        updateProgressBar(saldo);
+    }
+
+    function updateProgressBar(saldo) {
+        const maxSaldo = 20000000; 
+        const progress = document.getElementById('progress');
+        const percentage = Math.min((saldo / maxSaldo) * 100, 100);
+        progress.style.width = percentage + '%';
+    }
+
+    function showNotification(message, success = true) {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.style.backgroundColor = success ? '#00796b' : '#d32f2f';
+        notification.style.display = 'block';
+        setTimeout(() => {
+            notification.style.animation = 'fadeOut 0.5s ease-out';
+            setTimeout(() => notification.style.display = 'none', 500);
+        }, 2000);
+    }
+
+    function tarikSimpanan() {
+        const jumlahTarik = parseInt(document.getElementById('jumlahTarik').value);
+        const errorMessage = document.getElementById('error-message');
+
+        if (isNaN(jumlahTarik) || jumlahTarik <= 0) {
+            errorMessage.textContent = "Masukkan jumlah yang valid (lebih dari Rp 0).";
+            showNotification("Masukkan jumlah yang valid!", false);
+            return;
+        } else {
+            errorMessage.textContent = "";
+        }
+
+        let saldo = parseInt(localStorage.getItem('saldo')) || 0;
+
+        if (jumlahTarik > saldo) {
+            showNotification("Saldo tidak cukup untuk penarikan.", false);
+            return;
+        }
+
+        saldo -= jumlahTarik;
+        localStorage.setItem('saldo', saldo);
+        updateSaldo();
+
+        showNotification("Penarikan berhasil!");
+        setTimeout(() => window.location.href = 'simpanan.html', 2500);
+    }
+
+    updateSaldo();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembayaran Cicilan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #004d40, #80cbc4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: auto;
+        }
+
+        .payment-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            transform: scale(0.95);
+            animation: scaleIn 0.5s ease-in-out forwards;
+        }
+
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .payment-container h1 {
+            font-size: 2rem;
+            color: #004d40;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .payment-container form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .payment-container label {
+            font-size: 1rem;
+            color: #333;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .payment-container input, .payment-container select {
+            padding: 12px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .payment-container input:focus, .payment-container select:focus {
+            border-color: #00796b;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 121, 107, 0.6);
+        }
+
+        .payment-container button {
+            background: linear-gradient(135deg, #004d40, #00796b);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .payment-container button:hover {
+            background: linear-gradient(135deg, #00796b, #004d40);
+            transform: translateY(-3px);
+        }
+
+        .payment-container button:active {
+            transform: translateY(2px);
+        }
+
+        .payment-container select option {
+            padding: 10px;
+        }
+
+        .payment-container input[type="file"] {
+            padding: 8px;
+        }
+
+        .payment-container .payment-method-icons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .payment-container .payment-method-icons i {
+            font-size: 30px;
+            color: #00796b;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .payment-container .payment-method-icons i:hover {
+            transform: scale(1.1);
+        }
+
+        .success-message {
+            margin-top: 20px;
+            color: green;
+            font-weight: bold;
+            display: none;
+        }
+
+        .error-message {
+            margin-top: 20px;
+            color: red;
+            font-weight: bold;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .payment-container {
+                width: 100%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <h1>Pembayaran Cicilan</h1>
+        <form id="payment-form">
+            <label for="loan-id">ID Pinjaman:</label>
+            <input type="text" id="loan-id" name="loan-id" placeholder="Masukkan ID Pinjaman" required>
+
+            <label for="installment-amount">Jumlah Cicilan:</label>
+            <input type="number" id="installment-amount" name="installment-amount" placeholder="Masukkan jumlah cicilan" required>
+
+            <label for="payment-method">Metode Pembayaran:</label>
+            <select id="payment-method" name="payment-method" required>
+                <option value="">Pilih metode pembayaran</option>
+                <option value="bank_transfer">Transfer Bank</option>
+                <option value="credit_card">Kartu Kredit</option>
+                <option value="e_wallet">E-Wallet</option>
+            </select>
+
+            <div class="payment-method-icons">
+                <i class="fas fa-university" title="Transfer Bank"></i>
+                <i class="fas fa-credit-card" title="Kartu Kredit"></i>
+                <i class="fas fa-wallet" title="E-Wallet"></i>
+            </div>
+
+            <label for="proof-of-transfer">Unggah Bukti Transfer:</label>
+            <input type="file" id="proof-of-transfer" name="proof-of-transfer" accept="image/*" required>
+
+            <button type="submit">Bayar Cicilan</button>
+        </form>
+        <div class="success-message" id="success-message">Pembayaran berhasil!</div>
+        <div class="error-message" id="error-message">Terjadi kesalahan. Silakan coba lagi.</div>
+    </div>
+
+    <script>
+    document.getElementById('payment-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const loanId = document.getElementById('loan-id').value;
+        const installmentAmount = parseFloat(document.getElementById('installment-amount').value);
+        const paymentMethod = document.getElementById('payment-method').value;
+        const proofOfTransfer = document.getElementById('proof-of-transfer').files[0];
+
+        let transactionHistory = JSON.parse(localStorage.getItem('transactionHistory')) || [];
+        const transaction = transactionHistory.find(tx => tx.id === loanId);
+
+        if (!transaction) {
+            alert('ID Pinjaman tidak ditemukan.');
+            return;
+        }
+
+        if (transaction.amount <= 0) {
+            alert('Pinjaman sudah lunas.');
+            return;
+        }
+
+        if (installmentAmount > transaction.amount) {
+            alert('Jumlah cicilan melebihi sisa pinjaman.');
+            return;
+        }
+
+        // Update remaining loan amount
+        transaction.amount -= installmentAmount;
+
+        // Update localStorage
+        localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
+
+        // Show success message
+        document.getElementById('success-message').style.display = 'block';
+        document.getElementById('error-message').style.display = 'none';
+
+        setTimeout(() => {
+            alert(`Pembayaran untuk ID Pinjaman ${loanId} berhasil dilakukan sebesar Rp ${installmentAmount.toLocaleString('id-ID')} menggunakan metode ${paymentMethod}. Sisa pinjaman: Rp ${transaction.amount.toLocaleString('id-ID')}`);
+            if (transaction.amount === 0) {
+                alert('Pinjaman sudah lunas!');
+            }
+        }, 500);
+    });
+    </script>
+</body>
+</html>

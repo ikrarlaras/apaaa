@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Program dan Promosi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f5;
+            color: #004d40;
+        }
+
+        header {
+            background: linear-gradient(45deg, #004d40, #00796b);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 5px solid #003d33;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 36px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin: 0;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #80cbc4;
+            animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+            0% { width: 0; left: 50%; }
+            100% { width: 100%; left: 0; }
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .program-section {
+            margin-bottom: 30px;
+        }
+
+        .program-section h2 {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #004d40;
+        }
+
+        .program-section p {
+            font-weight: 300;
+            color: #555;
+        }
+
+        .promotion-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Membuat 3 kolom */
+            gap: 20px;
+        }
+
+        .promotion-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .promotion-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .promotion-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .promotion-card h3 {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #004d40;
+        }
+
+        .promotion-card p {
+            font-weight: 300;
+            color: #555;
+        }
+
+        .promotion-card button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #004d40;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 400;
+            transition: background-color 0.3s ease;
+        }
+
+        .promotion-card button:hover {
+            background-color: #80cbc4;
+            color: #004d40;
+        }
+
+        footer {
+            background-color: #004d40;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Responsif untuk layar lebih kecil */
+        @media (max-width: 1024px) {
+            .promotion-cards {
+                grid-template-columns: repeat(2, 1fr); /* Menjadi 2 kolom pada layar lebih kecil */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .promotion-cards {
+                grid-template-columns: 1fr; /* Menjadi 1 kolom pada layar ponsel */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Program dan Promosi</h1>
+    </header>
+
+    <div class="container">
+        <div class="program-section">
+            <h2>Program Unggulan</h2>
+            <p>Kami dengan bangga mempersembahkan berbagai program unggulan yang telah dirancang dengan cermat untuk memberikan solusi yang terbaik dan memenuhi berbagai kebutuhan finansial Anda. Program-program ini tidak hanya memberikan manfaat yang nyata, tetapi juga dirancang untuk memberikan kenyamanan dan kemudahan dalam setiap langkah yang Anda ambil. Dengan berbagai pilihan yang fleksibel, kami berkomitmen untuk membantu Anda mencapai tujuan finansial dengan lebih mudah dan lebih cepat.</p>
+        </div>
+
+        <div class="program-section">
+            <h2>Promosi Terbaru</h2>
+            <p>Jangan lewatkan kesempatan untuk menikmati penawaran menarik dan promosi eksklusif yang hanya tersedia untuk Anda. Kami menawarkan berbagai promosi dengan manfaat yang luar biasa, dirancang untuk memberikan nilai lebih dalam setiap transaksi yang Anda lakukan. Dapatkan keuntungan lebih banyak dan nikmati berbagai keuntungan lainnya dengan mengikuti promosi yang kami tawarkan. Pastikan Anda tidak ketinggalan kesempatan emas ini untuk memperoleh lebih banyak manfaat dengan cara yang mudah dan menguntungkan.</p>
+            <div class="promotion-cards">
+                <div class="promotion-card">
+                    <img src="uang.png" alt="Promo 1">
+                    <h3>Promo Bunga Rendah</h3>
+                    <p>Ajukan pinjaman sekarang dengan bunga yang sangat rendah, mulai dari hanya 0.5%. Dengan bunga yang terjangkau, Anda bisa lebih mudah merencanakan keuangan Anda dan mewujudkan berbagai kebutuhan tanpa khawatir dengan beban bunga yang tinggi. Jangan lewatkan kesempatan ini untuk mendapatkan pinjaman dengan syarat yang lebih ringan dan lebih menguntungkan.</p>
+                    <a href="promo1.html">
+                        <button>Pelajari Lebih Lanjut</button>
+                    </a>
+                </div>
+                <div class="promotion-card">
+                    <img src="bonus.png" alt="Promo 2">
+                    <h3>Tabungan Bonus</h3>
+                    <p>Setor lebih banyak dan nikmati bonus menarik setiap bulan! Dengan program tabungan bonus ini, setiap setoran yang Anda lakukan akan memberikan kesempatan untuk mendapatkan hadiah yang menarik. Semakin banyak Anda menabung, semakin besar bonus yang akan Anda terima. Ini adalah cara yang menyenangkan untuk menumbuhkan dana Anda sambil mendapatkan imbalan yang menguntungkan.</p>
+                    <a href="promo2.html">
+                        <button>Pelajari Lebih Lanjut</button>
+                    </a>
+                </div>
+                <div class="promotion-card">
+                    <img src="reward.png" alt="Promo 3">
+                    <h3>Referral Rewards</h3>
+                    <p>Undang teman Anda untuk bergabung dengan kami dan dapatkan hadiah spesial sebagai tanda terima kasih. Dengan program referral rewards, Anda bisa mendapatkan berbagai hadiah menarik setiap kali teman yang Anda ajak berhasil bergabung dan melakukan transaksi. Ini adalah kesempatan untuk berbagi manfaat dan mendapatkan keuntungan lebih banyak dengan cara yang mudah dan menyenangkan.</p>
+                    <a href="promo3.html">
+                        <button>Pelajari Lebih Lanjut</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
